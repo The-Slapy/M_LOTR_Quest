@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monopoly: Quests de la Tierra Media</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <div id="tokenLegend" class="token-legend">
+        <h4>Fichas de la Comunidad</h4>
+        <ul>
+	    <li><span><img src="images/Frodo.png" alt="Frodo"></span>Frodo</li>
+            <li><span><img src="images/Aragorn.png" alt="Aragorn"></span>Aragorn</li>
+            <li><span><img src="images/Gimli.png" alt="Gimli"></span>Gimli</li>
+            <li><span><img src="images/Legolas.png" alt="Legolas"></span>Legolas</li>
+            <li><span><img src="images/Gandalf.png" alt="Gandalf"></span>Gandalf</li>
+            <li><span><img src="images/Boromir.png" alt="Boromir"></span>Boromir</li>
+            <li><span><img src="images/Merry.png" alt="Merry"></span>Merry</li>
+            <li><span><img src="images/Pippin.png" alt="Pippin"></span>Pippin</li>
+            <li><span><img src="images/Sam.png" alt="Sam"></span>Sam</li></ul>
+    </div>
+
+<div class="top-bar">
+        <div class="top-bar-title" id="playerNameDisplay">Monopoly LOTR</div>
+        <div class="top-bar-buttons">
+            <button class="btn" onclick="openModal('aboutModal')" style="padding: 8px 15px; font-size: 0.9rem; background: linear-gradient(180deg, #2b3a42 0%, #16222a 100%); border-color: #4a5c66;">Acerca de</button>
+            <button class="btn" onclick="openModal('settingsModal')" style="padding: 8px 15px; font-size: 0.9rem;">Ajustes</button>
+            <button class="btn" onclick="logout()" id="btnLogout" style="display:none; padding: 8px 15px; font-size: 0.9rem;">Cambiar viajero</button>
+        </div>
+    </div>
+
+    <div id="setupView" class="container">
+        <h1 style="color: var(--gold-bright); text-shadow: 0 0 10px var(--ring-glow); margin-top: 0;">La Comunidad se Reúne</h1>
+        <p style="font-size: 1.2rem;">¿Cuántos valientes viajeros emprenderán la misión hacia el Monte del Destino?</p>
+        <select id="playerCount" onchange="renderPlayerInputs()">
+            <option value="2">2 Jugadores</option>
+            <option value="3">3 Jugadores</option>
+            <option value="4">4 Jugadores</option>
+            <option value="5">5 Jugadores</option>
+            <option value="6">6 Jugadores</option>
+        </select>
+        <div id="playerInputsContainer"></div>
+        <button class="btn" id="btnDraw" style="font-size: 1.3rem; margin-top: 20px; width: 80%;" onclick="startGameSetup()">Comenzar el Viaje</button>
+    </div>
+
+    <div id="loginView" class="container">
+        <h2>Identifícate, Viajero</h2>
+        <p>Selecciona tu ficha e introduce tu palabra élfica secreta de poder.</p>
+        
+        <div id="loginPlayerGrid" class="player-grid"></div>
+        
+        <input type="password" id="loginPassword" placeholder="Palabra Secreta">
+        <br><br>
+        <button class="btn" onclick="login()" style="width: 70%;">Reclamar Turno</button>
+    </div>
+
+    <div id="gameView" class="container">
+        
+        <div class="player-status">
+            <div class="deck-stats">
+                Mazo: <span id="deckCount"></span> misiones | Descartes: <span id="discardCount"></span>
+            </div>
+        </div>
+
+        <div class="card-container card-back" id="cardContainer">
+            <div id="cardBackView">
+                <div class="card-back-icon">👁️</div>
+                <h2 style="color: var(--danger); text-shadow: 0 0 15px #000; margin-top: 10px;">El Ojo te Observa</h2>
+                <p style="color: #bbb; font-family: 'Cinzel', serif;">Tu destino está sellado...</p>
+            </div>
+            <div id="cardFrontView">
+                <h3 class="card-title" id="cardTitle">Destino Revelado</h3>
+                <div class="quest-es-desc" id="questEsDesc"></div>
+                <div class="quest-es-rew" id="questEsRew"></div>
+                <div class="quest-en" id="questEnContainer">
+                    <strong id="questEnDesc"></strong><br><br>
+                    <span id="questEnRew"></span>
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-top: 20px;">
+            <button class="btn" id="btnDrawGame" onclick="drawCard()" style="font-size: 1.3rem; width: 70%;">Tomar Misión</button>
+            <button class="btn" id="btnHide" onclick="hideCard()" style="display:none; font-size: 1.2rem; background: linear-gradient(180deg, #666 0%, #333 100%);">Ocultar Carta</button>
+            <br><br>
+            <button class="btn" onclick="openModal('inventoryModal')" style="background: linear-gradient(180deg, #654321 0%, #321 100%); border-color: #853;">Ver Mis Secretos</button>
+        </div>
+    </div>
+
+<div id="settingsModal" class="modal">
+        <div class="modal-content">
+            <h2>Ajustes de la Forja</h2>
+            
+            <div class="setting-item">
+                <span>Ver Texto en Inglés:</span>
+                <label class="switch">
+                    <input type="checkbox" id="englishToggle" onchange="handleToggleEnglish(this)">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+
+            <div class="setting-item">
+                <span>Auto-Cierre (60s inactivo):</span>
+                <label class="switch">
+                    <input type="checkbox" id="autoLogoutToggle" onchange="toggleAutoLogout(this)">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+
+            <div class="setting-item">
+                <span>Fichas de la Comunidad:</span>
+                <label class="switch">
+                    <input type="checkbox" id="legendToggle" onchange="handleToggleLegend(this)">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+            
+            <br>
+            <button class="btn btn-danger" onclick="hardReset()" style="width: 90%;">Arrojar Partida al Fuego (Reiniciar)</button>
+            <br><br>
+            <button class="btn" onclick="closeModal('settingsModal')">Cerrar</button>
+        </div>
+    </div>
+
+    <div id="inventoryModal" class="modal">
+        <div class="modal-content">
+            <h2 style="color: var(--gold-bright);">Tus Secretos Guardados</h2>
+            <p style="font-size: 0.95rem; color: #ccc; margin-bottom: 20px;">Cartas que posees en secreto. Úsalas sabiamente.</p>
+            <div id="inventoryList" style="width: 100%;"></div>
+            <br>
+            <button class="btn" onclick="closeModal('inventoryModal')">Volver al Mapa</button>
+        </div>
+    </div>
+
+    <div id="sellModal" class="modal">
+        <div class="modal-content">
+            <h2>Entregar Objeto/Misión</h2>
+            <p>¿A qué otro viajero de la comunidad le entregarás este secreto?</p>
+            <select id="sellTargetSelect"></select>
+            <br>
+            <input type="password" id="sellTargetPass" placeholder="Palabra secreta del receptor">
+            <br><br>
+            <button class="btn-danger" style="padding: 12px 24px; font-weight: bold; border-radius: 4px;" onclick="confirmSell()">Confirmar Transferencia</button>
+            <br><br>
+            <button class="btn" onclick="closeModal('sellModal'); openModal('inventoryModal');">Cancelar</button>
+        </div>
+    </div>
+
+    <div id="tradeModal" class="modal">
+        <div class="modal-content">
+            <h2>Acuerdo de Intercambio</h2>
+            
+            <div id="tradeStep1">
+                <p>¿Con qué viajero deseas parlamentar e intercambiar secretos?</p>
+                <select id="tradeTargetSelect"></select>
+                <br>
+                <input type="password" id="tradeTargetPass" placeholder="Palabra secreta del receptor">
+                <br><br>
+                <button class="btn" onclick="tradeAuthenticate()">Validar Receptor</button>
+            </div>
+
+            <div id="tradeStep2" style="display:none;">
+                <p style="color: #8f8; font-weight: bold;">Identidad confirmada.</p>
+                <p>Selecciona el secreto que recibirás a cambio:</p>
+                <select id="tradeTargetCardSelect"></select>
+                <br><br>
+                <button class="btn-danger" style="padding: 12px 24px; font-weight: bold; border-radius: 4px;" onclick="confirmTrade()">Sellar Intercambio Mutuo</button>
+            </div>
+
+            <br>
+            <button class="btn" onclick="closeTradeModal()">Romper Tratado</button>
+        </div>
+    </div>
+
+<div id="aboutModal" class="modal">
+        <div class="modal-content" style="text-align: justify;">
+            <h2 style="color: var(--gold-bright); text-align: center; margin-bottom: 10px;">El Propósito del Viaje</h2>
+            
+            <p style="font-size: 0.95rem; line-height: 1.5; text-align: center;">Esta es una <strong>herramienta complementaria no oficial</strong>, creada por y para la comunidad hispanohablante. Su propósito es actuar como asistente para quienes ya poseen la versión física del juego en su idioma original.</p>
+            
+            <h3 style="color: var(--danger); border-bottom: 1px solid var(--danger); padding-bottom: 5px; margin-top: 25px; text-align: center;">Descargo de Responsabilidad Legal</h3>
+            
+            <p style="font-size: 0.80rem; color: #aaa; line-height: 1.4;">Este proyecto de código abierto <strong>no tiene fines de lucro y no está afiliado, patrocinado, autorizado ni respaldado</strong> por Hasbro, Inc., Middle-earth Enterprises, New Line Cinema, ni Warner Bros. Entertainment Inc.</p>
+            
+            <p style="font-size: 0.80rem; color: #aaa; line-height: 1.4;">Todos los nombres de personajes, lugares, mecánicas de juego, arte y textos originales relacionados con la franquicia son marcas registradas y propiedad intelectual de sus respectivos dueños. Esta aplicación opera bajo el principio de buena fe como una herramienta de fans orientada a la accesibilidad del idioma.</p>
+            
+            <p style="font-size: 0.85rem; color: var(--gold-old); line-height: 1.4; text-align: center; font-style: italic; margin-top: 15px;">¡Si disfrutas de esta experiencia, por favor apoya a los creadores comprando una copia oficial del juego de mesa!</p>
+            
+            <br>
+            <div style="text-align: center; width: 100%;">
+                <button class="btn" onclick="closeModal('aboutModal')">Entendido</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
